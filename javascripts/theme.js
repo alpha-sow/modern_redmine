@@ -1,6 +1,3 @@
-// Shadcn-inspired Redmine Theme JavaScript
-// File: javascripts/theme.js
-
 (function() {
   'use strict';
 
@@ -8,6 +5,9 @@
   function initTheme() {
     // Add smooth scrolling
     document.documentElement.style.scrollBehavior = 'smooth';
+
+    // Apply Tailwind utility classes to existing elements
+    applyTailwindClasses();
 
     // Enhance forms with better UX
     enhanceForms();
@@ -27,8 +27,69 @@
     // Add search enhancements
     enhanceSearch();
 
-    // Dark mode toggle (if preferences allow)
-    initDarkModeToggle();
+    // Initialize dropdown menus
+    initDropdowns();
+
+    // Add mobile menu toggle
+    initMobileMenu();
+  }
+
+  // Apply Tailwind utility classes to existing Redmine elements
+  function applyTailwindClasses() {
+    // Add container classes
+    const wrapper = document.querySelector('#wrapper');
+    if (wrapper) {
+      wrapper.classList.add('min-h-screen', 'flex', 'flex-col');
+    }
+
+    // Add responsive navigation classes
+    const mainMenu = document.querySelector('#main-menu');
+    if (mainMenu) {
+      mainMenu.classList.add('bg-white', 'border-b', 'border-gray-200');
+      const menuList = mainMenu.querySelector('ul');
+      if (menuList) {
+        menuList.classList.add('flex', 'space-x-2', 'container', 'mx-auto', 'px-4');
+      }
+    }
+
+    // Add card classes to content areas
+    const contentBoxes = document.querySelectorAll('.box');
+    contentBoxes.forEach(box => {
+      box.classList.add('bg-white', 'rounded-lg', 'shadow', 'p-6', 'mb-6');
+    });
+
+    // Add form classes
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+      form.classList.add('space-y-4');
+      
+      const fieldsets = form.querySelectorAll('fieldset');
+      fieldsets.forEach(fieldset => {
+        fieldset.classList.add('space-y-4');
+      });
+    });
+
+    // Add button classes
+    const buttons = document.querySelectorAll('input[type="submit"], input[type="button"], button, .button');
+    buttons.forEach(button => {
+      if (!button.classList.contains('btn')) {
+        button.classList.add('btn');
+      }
+    });
+
+    // Add table classes
+    const tables = document.querySelectorAll('table');
+    tables.forEach(table => {
+      table.classList.add('w-full', 'bg-white', 'rounded-lg', 'shadow', 'overflow-hidden');
+    });
+
+    // Add list classes
+    const lists = document.querySelectorAll('ul, ol');
+    lists.forEach(list => {
+      if (!list.closest('#main-menu')) {
+        list.classList.add('space-y-2');
+      }
+    });
   }
 
   // Enhance form interactions
