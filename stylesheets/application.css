@@ -1,14 +1,55 @@
 /* load the default Redmine stylesheet */
 @import url(../../../stylesheets/application.css);
 
-/* add a logo in the header */
-#header {
-    background: #507AAA url(../images/logo.png) no-repeat 2px;
-    padding-left: 86px;
+/* Base styles */
+body {
+    background-color: #1a1a1a; /* Dark background */
+    color: #e0e0e0; /* Light text color */
+    font-family: 'Arial', sans-serif;
 }
 
-/* move the project menu to the right */
-#main-menu { 
-    left: auto;
-    right: 0px;
+/* Header styles */
+header {
+    background-color: #2a2a2a;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Link styles */
+a {
+    color: #4a90e2; /* Bright blue for links */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Button styles */
+button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #357ab8;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #444;
+}
+
+th {
+    background-color: #2a2a2a;
 }
