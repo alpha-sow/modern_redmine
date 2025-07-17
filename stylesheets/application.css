@@ -1,6 +1,6 @@
 /* Modern Redmine Theme - Custom Stylesheet */
 /* Load the default Redmine stylesheet first */
-@import url(../../../stylesheets/application.css);
+@import url(../../../stylesheets/application.css?6.0.6);
 
 /* CSS Variables for easy customization */
 :root {
