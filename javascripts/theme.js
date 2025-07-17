@@ -1,148 +1,385 @@
-// Modern Redmine Theme - Custom JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-  // Add smooth scrolling for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    });
-  });
+// Shadcn-inspired Redmine Theme JavaScript
+// File: javascripts/theme.js
 
-  // Enhanced table row hover effects
-  const tableRows = document.querySelectorAll('table.list tr');
-  tableRows.forEach(row => {
-    row.addEventListener('mouseenter', function() {
-      this.style.transform = 'translateX(5px)';
-    });
+(function() {
+  'use strict';
+
+  // Theme initialization
+  function initTheme() {
+    // Add smooth scrolling
+    document.documentElement.style.scrollBehavior = 'smooth';
+
+    // Enhance forms with better UX
+    enhanceForms();
+
+    // Add loading states to buttons
+    enhanceButtons();
+
+    // Improve table interactions
+    enhanceTables();
+
+    // Add keyboard navigation
+    addKeyboardNavigation();
+
+    // Initialize tooltips
+    initTooltips();
+
+    // Add search enhancements
+    enhanceSearch();
+
+    // Dark mode toggle (if preferences allow)
+    initDarkModeToggle();
+  }
+
+  // Enhance form interactions
+  function enhanceForms() {
+    const forms = document.querySelectorAll('form');
     
-    row.addEventListener('mouseleave', function() {
-      this.style.transform = 'translateX(0)';
-    });
-  });
+    forms.forEach(form => {
+      // Add floating labels effect
+      const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea');
+      
+      inputs.forEach(input => {
+        // Add focus/blur effects
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+          if (!this.value) {
+            this.parentElement.classList.remove('focused');
+          }
+        });
 
-  // Form validation enhancements
-  const forms = document.querySelectorAll('form');
-  forms.forEach(form => {
-    const inputs = form.querySelectorAll('input[required], textarea[required]');
-    inputs.forEach(input => {
-      input.addEventListener('blur', function() {
-        if (!this.value.trim()) {
-          this.style.borderColor = '#e74c3c';
-          this.style.boxShadow = '0 0 0 3px rgba(231, 76, 60, 0.2)';
-        } else {
-          this.style.borderColor = '#27ae60';
-          this.style.boxShadow = '0 0 0 3px rgba(39, 174, 96, 0.2)';
+        // Add input validation styling
+        input.addEventListener('input', function() {
+          if (this.validity.valid) {
+            this.classList.remove('invalid');
+            this.classList.add('valid');
+          } else {
+            this.classList.remove('valid');
+            this.classList.add('invalid');
+          }
+        });
+      });
+
+      // Add form submission loading state
+      form.addEventListener('submit', function() {
+        const submitBtn = this.querySelector('input[type="submit"], button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.style.opacity = '0.6';
+          submitBtn.style.cursor = 'not-allowed';
+          
+          // Add loading spinner
+          const originalText = submitBtn.value || submitBtn.textContent;
+          if (submitBtn.tagName === 'INPUT') {
+            submitBtn.value = 'Loading...';
+          } else {
+            submitBtn.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⟳</span> Loading...';
+          }
         }
       });
     });
-  });
+  }
 
-  // Auto-hide flash messages after 5 seconds
-  const flashMessages = document.querySelectorAll('.flash');
-  flashMessages.forEach(flash => {
-    setTimeout(() => {
-      flash.style.opacity = '0';
-      flash.style.transform = 'translateY(-20px)';
-      setTimeout(() => {
-        flash.style.display = 'none';
-      }, 300);
-    }, 5000);
-  });
-
-  // Add loading states to form submissions
-  const submitButtons = document.querySelectorAll('input[type="submit"], button[type="submit"]');
-  submitButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      this.style.opacity = '0.7';
-      this.style.pointerEvents = 'none';
-      const originalText = this.value || this.textContent;
-      this.value = 'Processing...';
-      this.textContent = 'Processing...';
-      
-      // Reset after 3 seconds if form hasn't been submitted
-      setTimeout(() => {
-        this.style.opacity = '1';
-        this.style.pointerEvents = 'auto';
-        this.value = originalText;
-        this.textContent = originalText;
-      }, 3000);
-    });
-  });
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + K for quick search
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      const searchInput = document.querySelector('#q');
-      if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-      }
-    }
+  // Enhance button interactions
+  function enhanceButtons() {
+    const buttons = document.querySelectorAll('.button, input[type="submit"], input[type="button"], button');
     
-    // Ctrl/Cmd + N for new issue
-    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-      e.preventDefault();
-      const newIssueLink = document.querySelector('a[href*="/issues/new"]');
-      if (newIssueLink) {
-        window.location.href = newIssueLink.href;
+    buttons.forEach(button => {
+      // Add ripple effect
+      button.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.classList.add('ripple');
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+
+    // Add ripple CSS
+    const rippleStyle = document.createElement('style');
+    rippleStyle.textContent = `
+      button, .button, input[type="submit"], input[type="button"] {
+        position: relative;
+        overflow: hidden;
       }
-    }
-  });
+      
+      .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+      }
+      
+      @keyframes ripple {
+        to {
+          transform: scale(2);
+          opacity: 0;
+        }
+      }
+      
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `;
+    document.head.appendChild(rippleStyle);
+  }
 
-  // Add tooltips to truncated text
-  const truncatedElements = document.querySelectorAll('[title]');
-  truncatedElements.forEach(element => {
-    if (element.scrollWidth > element.clientWidth) {
-      element.style.cursor = 'help';
-    }
-  });
+  // Enhance table interactions
+  function enhanceTables() {
+    const tables = document.querySelectorAll('table');
+    
+    tables.forEach(table => {
+      // Add sortable headers
+      const headers = table.querySelectorAll('th');
+      headers.forEach(header => {
+        if (header.textContent.trim()) {
+          header.style.cursor = 'pointer';
+          header.style.userSelect = 'none';
+          header.title = 'Click to sort';
+          
+          header.addEventListener('click', function() {
+            sortTable(table, Array.from(headers).indexOf(this));
+          });
+        }
+      });
 
-  // Dark mode toggle (optional)
-  const darkModeToggle = document.createElement('button');
-  darkModeToggle.textContent = '🌙';
-  darkModeToggle.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 1001;
-    font-size: 16px;
-    transition: all 0.3s ease;
-  `;
-  
-  darkModeToggle.addEventListener('click', function() {
-    document.body.classList.toggle('dark-mode');
-    this.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-  });
-  
-  document.body.appendChild(darkModeToggle);
+      // Add row selection
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        row.addEventListener('click', function() {
+          // Toggle selection
+          this.classList.toggle('selected');
+        });
+      });
+    });
 
-  // Add CSS for dark mode
-  const darkModeStyles = document.createElement('style');
-  darkModeStyles.textContent = `
-    .dark-mode {
-      filter: invert(1) hue-rotate(180deg);
-    }
-    .dark-mode img,
-    .dark-mode video,
-    .dark-mode iframe {
-      filter: invert(1) hue-rotate(180deg);
-    }
-  `;
-  document.head.appendChild(darkModeStyles);
+    // Add table sorting CSS
+    const tableStyle = document.createElement('style');
+    tableStyle.textContent = `
+      th[data-sort="asc"]:after {
+        content: " ↑";
+      }
+      
+      th[data-sort="desc"]:after {
+        content: " ↓";
+      }
+      
+      tr.selected {
+        background-color: hsl(var(--primary) / 0.1) !important;
+      }
+    `;
+    document.head.appendChild(tableStyle);
+  }
 
-  console.log('Modern Redmine Theme loaded successfully!');
-});
+  // Simple table sorting function
+  function sortTable(table, columnIndex) {
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const header = table.querySelectorAll('th')[columnIndex];
+    
+    const isAscending = header.getAttribute('data-sort') !== 'asc';
+    
+    // Clear all sort indicators
+    table.querySelectorAll('th').forEach(th => th.removeAttribute('data-sort'));
+    
+    // Set current sort direction
+    header.setAttribute('data-sort', isAscending ? 'asc' : 'desc');
+    
+    rows.sort((a, b) => {
+      const aValue = a.cells[columnIndex].textContent.trim();
+      const bValue = b.cells[columnIndex].textContent.trim();
+      
+      // Try to parse as numbers
+      const aNum = parseFloat(aValue);
+      const bNum = parseFloat(bValue);
+      
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return isAscending ? aNum - bNum : bNum - aNum;
+      }
+      
+      // String comparison
+      return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    });
+    
+    // Reorder rows
+    rows.forEach(row => tbody.appendChild(row));
+  }
+
+  // Add keyboard navigation
+  function addKeyboardNavigation() {
+    document.addEventListener('keydown', function(e) {
+      // Alt + M for main menu
+      if (e.altKey && e.key === 'm') {
+        e.preventDefault();
+        const mainMenu = document.querySelector('#main-menu a');
+        if (mainMenu) mainMenu.focus();
+      }
+      
+      // Alt + S for search
+      if (e.altKey && e.key === 's') {
+        e.preventDefault();
+        const search = document.querySelector('input[type="text"]');
+        if (search) search.focus();
+      }
+      
+      // Escape to close modals/dropdowns
+      if (e.key === 'Escape') {
+        const modals = document.querySelectorAll('.modal, .dropdown');
+        modals.forEach(modal => modal.style.display = 'none');
+      }
+    });
+  }
+
+  // Initialize tooltips
+  function initTooltips() {
+    const tooltipElements = document.querySelectorAll('[title]');
+    
+    tooltipElements.forEach(element => {
+      const title = element.getAttribute('title');
+      if (title) {
+        element.addEventListener('mouseenter', function(e) {
+          showTooltip(e, title);
+        });
+        
+        element.addEventListener('mouseleave', function() {
+          hideTooltip();
+        });
+      }
+    });
+  }
+
+  function showTooltip(e, text) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = text;
+    tooltip.style.cssText = `
+      position: absolute;
+      background: hsl(var(--popover));
+      color: hsl(var(--popover-foreground));
+      padding: 0.5rem;
+      border-radius: var(--radius);
+      border: 1px solid hsl(var(--border));
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      z-index: 9999;
+      font-size: 0.75rem;
+      max-width: 200px;
+      pointer-events: none;
+    `;
+    
+    document.body.appendChild(tooltip);
+    
+    const rect = tooltip.getBoundingClientRect();
+    tooltip.style.left = (e.pageX - rect.width / 2) + 'px';
+    tooltip.style.top = (e.pageY - rect.height - 10) + 'px';
+  }
+
+  function hideTooltip() {
+    const tooltip = document.querySelector('.tooltip');
+    if (tooltip) {
+      tooltip.remove();
+    }
+  }
+
+  // Enhance search functionality
+  function enhanceSearch() {
+    const searchInputs = document.querySelectorAll('input[type="text"]');
+    
+    searchInputs.forEach(input => {
+      if (input.placeholder && input.placeholder.toLowerCase().includes('search')) {
+        // Add search icon
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.display = 'inline-block';
+        wrapper.style.width = '100%';
+        
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+        
+        const icon = document.createElement('span');
+        icon.innerHTML = '🔍';
+        icon.style.cssText = `
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          opacity: 0.5;
+        `;
+        wrapper.appendChild(icon);
+        
+        // Add live search (debounced)
+        let searchTimeout;
+        input.addEventListener('input', function() {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            // Implement live search logic here
+            console.log('Searching for:', this.value);
+          }, 300);
+        });
+      }
+    });
+  }
+
+  // Dark mode toggle
+  function initDarkModeToggle() {
+    // Only add if user hasn't explicitly set a preference
+    if (!localStorage.getItem('redmine-theme-preference')) {
+      const toggle = document.createElement('button');
+      toggle.innerHTML = '🌙';
+      toggle.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        z-index: 9999;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+      `;
+      
+      toggle.addEventListener('click', function() {
+        document.documentElement.classList.toggle('dark');
+        this.innerHTML = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+      });
+      
+      document.body.appendChild(toggle);
+    }
+  }
+
+  // Initialize theme when DOM is loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTheme);
+  } else {
+    initTheme();
+  }
+
+  // Add some utility functions to window for external use
+  window.ShadcnTheme = {
+    showTooltip,
+    hideTooltip,
+    sortTable
+  };
+
+})();
